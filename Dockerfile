@@ -36,7 +36,7 @@ RUN set -x \
     && rm -rf "/opt/src/libreswan-${SWAN_VER}" \
     && apk del --no-cache \
          bison flex gcc make libc-dev bsd-compat-headers linux-pam-dev \
-         nss-dev libcap-ng-dev lifevent-dev curl-dev nspr-dev
+         nss-dev libcap-ng-dev libevent-dev curl-dev nspr-dev
 
 # Copy RTX1200 compatible IKEv2 setup script
 COPY ./ikev2-rtx1200.sh /opt/src/ikev2.sh
