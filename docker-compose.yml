@@ -12,13 +12,13 @@ services:
     privileged: true
     hostname: ipsec-vpn-server
     network_mode: host  # ホストネットワークを直接使用（10.117.142.0/24 へのアクセスに必要）
-    environment:
-      # VPN_IPSEC_PSK を指定しない場合、初回起動時に自動生成されます
-      # 生成された PSK は IKEv2 と L2TP/IPsec の両方で共有されます
-      # 生成された PSK は docker logs で確認できます: docker logs ipsec-vpn-rtx1200
-      # 
-      # カスタム PSK を使用する場合は以下のコメントを外して設定:
-      # VPN_IPSEC_PSK: "your-strong-psk-here"
+    # environment:
+    #   # VPN_IPSEC_PSK を指定しない場合、初回起動時に自動生成されます
+    #   # 生成された PSK は IKEv2 と L2TP/IPsec の両方で共有されます
+    #   # 生成された PSK は docker logs で確認できます: docker logs ipsec-vpn-rtx1200
+    #   # 
+    #   # カスタム PSK を使用する場合は以下のコメントを外して設定:
+    #   VPN_IPSEC_PSK: "your-strong-psk-here"
     volumes:
       - ikev2-vpn-data:/etc/ipsec.d
       - /lib/modules:/lib/modules:ro
