@@ -106,7 +106,6 @@ conn ikev2-rtx1200
   
   # NAT-T
   encapsulation=yes
-  nat-ikev2-lanman=yes
   
   # DPD (Dead Peer Detection)
   dpddelay=30
