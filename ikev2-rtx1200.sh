@@ -90,9 +90,14 @@ conn ikev2-rtx1200
   leftsendcert=never
   
   # Right (Client - RTX1200) configuration
+  # RTX1200 はアドレスで識別し、名前として dam-client を送信
   right=%any
   rightid=@${CLIENT_ID}
   rightsubnet=0.0.0.0/0
+  
+  # RTX1200 の ID タイプに柔軟に対応
+  # アドレス識別とFQDN識別の両方を許可
+  rightid2=%any
   
   # Legacy crypto for RTX1200 compatibility
   # NO AES-GCM, NO SHA2, NO MODP2048
@@ -128,7 +133,11 @@ cat > /etc/ipsec.secrets << EOF
 # /etc/ipsec.secrets - RTX1200 Compatible PSK
 
 # PSK for RTX1200 connection
+# RTX1200 はアドレスベースで識別するため、複数のパターンに対応
 @${SERVER_ID} @${CLIENT_ID} : PSK "${VPN_IPSEC_PSK}"
+@${SERVER_ID} %any : PSK "${VPN_IPSEC_PSK}"
+%any @${CLIENT_ID} : PSK "${VPN_IPSEC_PSK}"
+%any %any : PSK "${VPN_IPSEC_PSK}"
 
 # Include additional secrets
 include /etc/ipsec.d/*.secrets
