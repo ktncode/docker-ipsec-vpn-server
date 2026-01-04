@@ -22,19 +22,9 @@ RTX1200 ルーター専用の IKEv2 IPsec VPN サーバーです。RTX1200 が�
 
 ## クイックスタート
 
-### 1. PSK の設定
+### 1. コンテナのビルドと起動
 
-```bash
-# .env ファイルを作成
-cp .env.example .env
-
-# エディタで .env を開き、VPN_IPSEC_PSK を変更
-nano .env
-```
-
-または、`docker-compose.yml` の `VPN_IPSEC_PSK` を直接編集してください。
-
-### 2. コンテナのビルドと起動
+PSK は初回起動時に**自動生成**されます:
 
 ```bash
 # イメージをビルド
@@ -43,21 +33,35 @@ docker compose build
 # コンテナを起動
 docker compose up -d
 
-# ログを確認
-docker logs -f ipsec-vpn-rtx1200
+# 自動生成された PSK を確認
+./show-psk.sh
 ```
 
-成功すると、以下のような情報が表示されます:
+または、ログで直接確認:
 
+```bash
+docker logs ipsec-vpn-rtx1200 | grep "VPN IPsec PSK"
 ```
-==========================================
-RTX1200 Compatible IKEv2 Auto Setup
-==========================================
-Server ID: @dam-server
-Client ID: @dam-client
-VPN Subnet: 10.117.142.0/24
-Public IP: xxx.xxx.xxx.xxx
-==========================================
+
+**重要**: 表示された PSK は必ず保存してください! RTX1200 の設定に必要です。
+
+#### カスタム PSK を使用する場合
+
+`docker-compose.yml` を編集:
+
+```yaml
+environment:
+  VPN_IPSEC_PSK: "your-custom-strong-psk-here"
+```
+
+### 2. PSK の確認
+
+```bash
+# 簡単確認
+./show-psk.sh
+
+# または詳細ログ
+docker logs ipsec-vpn-rtx1200
 ```
 
 ### 3. RTX1200 の設定

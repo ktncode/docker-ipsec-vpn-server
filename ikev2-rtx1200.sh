@@ -17,10 +17,20 @@ if [ "$1" = "--auto" ]; then
   AUTO_MODE=1
 fi
 
-# Validate PSK
+# Generate PSK if not set
 if [ -z "$VPN_IPSEC_PSK" ]; then
-  echo "Error: VPN_IPSEC_PSK environment variable must be set"
-  exit 1
+  echo "VPN_IPSEC_PSK not set. Generating random PSK..."
+  VPN_IPSEC_PSK=$(LC_CTYPE=C tr -dc 'A-HJ-NPR-Za-km-z2-9' </dev/urandom 2>/dev/null | head -c 32)
+  echo "Generated PSK (save this!): ${VPN_IPSEC_PSK}"
+  
+  # Save to vpn-gen.env for persistence
+  mkdir -p /etc/ipsec.d
+  cat > /etc/ipsec.d/vpn-gen.env << EOF
+# Auto-generated VPN credentials
+# Generated on: $(date)
+VPN_IPSEC_PSK='${VPN_IPSEC_PSK}'
+EOF
+  chmod 600 /etc/ipsec.d/vpn-gen.env
 fi
 
 # Configuration parameters
@@ -145,12 +155,18 @@ if [ "$AUTO_MODE" = 1 ]; then
   # Output format expected by run.sh
   cat <<EOF
 
+================================================
+RTX1200 IKEv2 VPN Configuration
+================================================
+
 VPN server address: ${PUBLIC_IP}
 VPN IPsec PSK: ${VPN_IPSEC_PSK}
 Server identifier: @${SERVER_ID}
 Client identifier: @${CLIENT_ID}
 
+================================================
 RTX1200 Configuration Guide:
+================================================
 
 1. IKE Version: IKEv2
 2. Peer Address: ${PUBLIC_IP}
@@ -162,6 +178,11 @@ RTX1200 Configuration Guide:
 8. DH Group: MODP1024 (Group 2)
 9. NAT Traversal: Enabled
 10. VPN Subnet: ${VPN_SUBNET}
+
+================================================
+IMPORTANT: Save the PSK above!
+You need it to configure your RTX1200 router.
+================================================
 
 Next steps: Configure your RTX1200 router with the above settings.
 
