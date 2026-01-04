@@ -4,17 +4,27 @@ volumes:
   ikev2-vpn-data:
 
 services:
-  vpn:
-    image: hwdsl2/ipsec-vpn-server
+  ipsec:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ipsec-vpn-rtx1200:latest
+    container_name: ipsec-vpn-rtx1200
     restart: always
-    env_file:
-      - ./vpn.env
-    ports:
-      - "500:500/udp"
-      - "4500:4500/udp"
     privileged: true
     hostname: ipsec-vpn-server
-    container_name: ipsec-vpn-server
+    network_mode: host  # ホストネットワークを直接使用（10.117.142.0/24 へのアクセスに必要）
+    environment:
+      # RTX1200 用の事前共有鍵を設定してください
+      VPN_IPSEC_PSK: "your-strong-psk-here-change-me"
     volumes:
       - ikev2-vpn-data:/etc/ipsec.d
       - /lib/modules:/lib/modules:ro
+    sysctls:
+      - net.ipv4.ip_forward=1
+      - net.ipv4.conf.all.accept_redirects=0
+      - net.ipv4.conf.all.send_redirects=0
+      - net.ipv4.conf.all.rp_filter=0
+      - net.ipv4.conf.default.accept_redirects=0
+      - net.ipv4.conf.default.send_redirects=0
+      - net.ipv4.conf.default.rp_filter=0

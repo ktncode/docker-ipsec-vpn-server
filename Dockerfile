@@ -36,10 +36,11 @@ RUN set -x \
     && rm -rf "/opt/src/libreswan-${SWAN_VER}" \
     && apk del --no-cache \
          bison flex gcc make libc-dev bsd-compat-headers linux-pam-dev \
-         nss-dev libcap-ng-dev libevent-dev curl-dev nspr-dev
+         nss-dev libcap-ng-dev lifevent-dev curl-dev nspr-dev
 
-RUN wget -t 3 -T 30 -nv -O /opt/src/ikev2.sh https://github.com/hwdsl2/setup-ipsec-vpn/raw/ad61b354c57b3fa9871c04ec177bef2a93dd8eeb/extras/ikev2setup.sh \
-    && chmod +x /opt/src/ikev2.sh \
+# Copy RTX1200 compatible IKEv2 setup script
+COPY ./ikev2-rtx1200.sh /opt/src/ikev2.sh
+RUN chmod +x /opt/src/ikev2.sh \
     && ln -s /opt/src/ikev2.sh /usr/bin
 
 COPY ./run.sh /opt/src/run.sh
