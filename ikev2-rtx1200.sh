@@ -17,14 +17,22 @@ if [ "$1" = "--auto" ]; then
   AUTO_MODE=1
 fi
 
-# Use PSK from run.sh (already generated and available as environment variable)
-# run.sh sets VPN_IPSEC_PSK before calling this script
+# Use PSK from run.sh or vpn-gen.env
 if [ -z "$VPN_IPSEC_PSK" ]; then
-  echo "ERROR: VPN_IPSEC_PSK not provided by run.sh"
-  exit 1
+  # Try to load from vpn-gen.env (created by run.sh)
+  if [ -f /etc/ipsec.d/vpn-gen.env ]; then
+    echo "Loading PSK from vpn-gen.env..."
+    . /etc/ipsec.d/vpn-gen.env
+  fi
+  
+  # Still empty? Error
+  if [ -z "$VPN_IPSEC_PSK" ]; then
+    echo "ERROR: VPN_IPSEC_PSK not available"
+    exit 1
+  fi
 fi
 
-echo "Using PSK from run.sh: ${VPN_IPSEC_PSK}"
+echo "Using PSK: ${VPN_IPSEC_PSK}"
 
 # Configuration parameters
 SERVER_ID="dam-server"
