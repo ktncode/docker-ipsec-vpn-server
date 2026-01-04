@@ -62,6 +62,9 @@ environment:
 
 # または詳細ログ
 docker logs ipsec-vpn-rtx1200
+
+# またはステータス確認（ポート情報含む）
+./status.sh
 ```
 
 ### 3. RTX1200 の設定
